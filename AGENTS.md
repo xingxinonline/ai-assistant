@@ -58,15 +58,15 @@ ai-assistant/
 │       ├── sdk_reference.md    # SDK 组件详解
 │       ├── protocols.md        # 通信协议详解
 │       └── architecture.md     # 系统架构说明
-├── SDK/                    # 参考实现 (第三方开源)
+├── third_party/            # 第三方开源组件 (Git 子模块)
 │   ├── xiaozhi-esp32/          # ESP32 硬件端 (C++)
 │   ├── xiaozhi-esp32-server/   # Python 云端参考实现
 │   ├── xiaozhi-mqtt-gateway/   # MQTT 网关 (Node.js)
 │   ├── voiceprint-api/         # 声纹识别 (Python)
 │   ├── mcp-endpoint-server/    # MCP 接入点 (Python)
-│   ├── mem0/                   # 🆕 AI 记忆管理库 (Python)
+│   ├── mem0/                   # AI 记忆管理库 (Python)
 │   ├── LightRAG/               # 知识图谱 RAG (Python)
-│   └── bullmq/                 # 🆕 Redis 任务队列 (Python/TS)
+│   └── bullmq/                 # Redis 任务队列 (Python/TS)
 ├── AGENTS.md               # 本文件
 └── README.md               # 项目说明
 ```
@@ -109,9 +109,11 @@ uv run pytest --cov=src # 覆盖率
 
 ### ⚠️ 谨慎修改
 
-- `SDK/xiaozhi-esp32/` - ESP32 C++ 代码
+- `third_party/xiaozhi-esp32/` - ESP32 C++ 代码
 
 ### ❌ 禁止修改
+
+- `third_party/` - 第三方子模块 (只读参考)
 
 - `.venv/` - 虚拟环境
 - `__pycache__/` - Python 缓存
@@ -204,5 +206,5 @@ HOW:
 | SDK 各组件详细说明 | `docs/agent_context/sdk_reference.md` |
 | 通信协议 (WebSocket/MCP/MQTT) | `docs/agent_context/protocols.md` |
 | 系统架构和部署 | `docs/agent_context/architecture.md` |
-| ESP32 协议原始文档 | `SDK/xiaozhi-esp32/docs/` |
-| 云端服务参考实现 | `SDK/xiaozhi-esp32-server/main/xiaozhi-server/` |
+| ESP32 协议原始文档 | `third_party/xiaozhi-esp32/docs/` |
+| 云端服务参考实现 | `third_party/xiaozhi-esp32-server/main/xiaozhi-server/` |

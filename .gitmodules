@@ -1,0 +1,24 @@
+[submodule "third_party/xiaozhi-esp32"]
+	path = third_party/xiaozhi-esp32
+	url = https://github.com/78/xiaozhi-esp32.git
+[submodule "third_party/xiaozhi-esp32-server"]
+	path = third_party/xiaozhi-esp32-server
+	url = https://github.com/xinnan-tech/xiaozhi-esp32-server.git
+[submodule "third_party/xiaozhi-mqtt-gateway"]
+	path = third_party/xiaozhi-mqtt-gateway
+	url = https://github.com/xinnan-tech/xiaozhi-mqtt-gateway.git
+[submodule "third_party/voiceprint-api"]
+	path = third_party/voiceprint-api
+	url = https://github.com/xinnan-tech/voiceprint-api.git
+[submodule "third_party/mcp-endpoint-server"]
+	path = third_party/mcp-endpoint-server
+	url = https://github.com/xinnan-tech/mcp-endpoint-server.git
+[submodule "third_party/mem0"]
+	path = third_party/mem0
+	url = https://github.com/mem0ai/mem0.git
+[submodule "third_party/LightRAG"]
+	path = third_party/LightRAG
+	url = https://github.com/HKUDS/LightRAG.git
+[submodule "third_party/bullmq"]
+	path = third_party/bullmq
+	url = https://github.com/taskforcesh/bullmq.git
