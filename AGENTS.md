@@ -238,11 +238,26 @@ HOW:
 
 当需要更详细的信息时，请阅读以下文档：
 
+### 系统文档
+
 | 需要了解 | 阅读文档 |
 |----------|----------|
 | **硬件平台** (ESP32-S3 规格/引脚) | `docs/agent_context/hardware.md` |
-| 第三方组件详细说明 | `docs/agent_context/third_party_reference.md` |
-| 通信协议 (WebSocket/MCP/MQTT) | `docs/agent_context/protocols.md` |
 | 系统架构和部署 | `docs/agent_context/architecture.md` |
+| 通信协议 (WebSocket/MCP/MQTT) | `docs/agent_context/protocols.md` |
+| 第三方组件详细说明 | `docs/agent_context/third_party_reference.md` |
+
+### 模块设计文档
+
+| 模块                                         | 阅读文档                                 |
+| -------------------------------------------- | ---------------------------------------- |
+| **Mem0 记忆服务** (遗忘曲线/压缩/检索)       | `docs/agent_context/design_memory.md`    |
+| **LightRAG 知识库** (图谱/混合检索/增量更新) | `docs/agent_context/design_knowledge.md` |
+| **Scheduler 定时提醒** (确认重试/话术生成)   | `docs/agent_context/design_scheduler.md` |
+
+### 参考实现
+
+| 需要了解 | 阅读文档 |
+|----------|----------|
 | ESP32 协议原始文档 | `third_party/xiaozhi-esp32/docs/` |
 | 云端服务参考实现 | `third_party/xiaozhi-esp32-server/main/xiaozhi-server/` |
