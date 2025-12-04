@@ -104,37 +104,27 @@ python src/main.py
 
 ```
 ai-assistant/
-├── AGENTS.md               # AI Agent 指导文件
-├── README.md               # 项目说明文档 (本文件)
-├── .env.example            # 环境变量模板
-├── pyproject.toml          # 项目配置和依赖
-├── src/                    # 本项目 Python 服务端源代码
+├── src/                    # Python 服务端源代码 (主要开发区)
 ├── tests/                  # 测试目录
-├── docs/                   # 文档目录
-│   └── agent_context/      # AI Agent 详细参考文档
-└── third_party/            # 第三方组件 (Git Submodule)
-    ├── xiaozhi-esp32/          # ESP32 硬件端固件 (C++)
-    ├── xiaozhi-esp32-server/   # Python 云端参考实现
-    ├── xiaozhi-mqtt-gateway/   # MQTT 网关 (Node.js)
-    ├── voiceprint-api/         # 声纹识别 (Python)
-    ├── mcp-endpoint-server/    # MCP 接入点 (Python)
-    ├── mem0/                   # AI 记忆管理库 (Python)
-    ├── LightRAG/               # 知识图谱 RAG (Python)
-    └── bullmq/                 # Redis 任务队列 (Python/TS)
+├── docs/agent_context/     # AI Agent 详细参考文档
+└── third_party/            # 第三方开源组件 (Git 子模块, 只读)
 ```
 
-### 第三方组件说明
+> 详细项目结构见 [AGENTS.md](AGENTS.md)
 
-| 组件 | 路径 | 说明 |
-|------|------|------|
-| **硬件端** | `third_party/xiaozhi-esp32` | ESP32 固件，支持 70+ 开发板 |
-| **云端服务** | `third_party/xiaozhi-esp32-server` | 完整 Python 服务端参考实现 |
-| **MQTT 网关** | `third_party/xiaozhi-mqtt-gateway` | MQTT+UDP → WebSocket 协议桥接 |
-| **声纹识别** | `third_party/voiceprint-api` | 3D-Speaker 说话人识别服务 |
-| **MCP 接入点** | `third_party/mcp-endpoint-server` | MCP 工具注册中心 |
-| **AI 记忆** | `third_party/mem0` | 对话记忆管理 |
-| **知识图谱** | `third_party/LightRAG` | RAG + 知识图谱检索 |
-| **任务队列** | `third_party/bullmq` | Redis 消息队列 |
+### 第三方组件
+
+| 组件 | 说明 |
+|------|------|
+| `xiaozhi-esp32` | ESP32 固件，支持 70+ 开发板 |
+| `xiaozhi-esp32-server` | Python 云端参考实现 |
+| `xiaozhi-mqtt-gateway` | MQTT+UDP → WebSocket 协议桥接 |
+| `voiceprint-api` | 3D-Speaker 声纹识别 |
+| `mem0` | AI 记忆管理 |
+| `LightRAG` | 知识图谱 RAG |
+| `bullmq` | Redis 任务队列 |
+
+> 详细说明见 [docs/agent_context/third_party_reference.md](docs/agent_context/third_party_reference.md)
 
 ## 配置说明
 
