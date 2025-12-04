@@ -119,6 +119,10 @@ ai-assistant/
 - 路径: `SDK/xiaozhi-mqtt-gateway`
 - 语言: Node.js
 - 功能: MQTT+UDP 到 WebSocket 桥接，设备指令下发
+- 核心文件:
+  - `app.js` - 主入口，MQTT/UDP 服务器，WebSocket 桥接
+  - `mqtt-protocol.js` - MQTT 3.1.1 协议解析与封装
+  - `utils/mqtt_config_v2.js` - 设备认证签名生成与验证
 
 ## 通信协议
 
@@ -144,6 +148,61 @@ ai-assistant/
 基于 JSON-RPC 2.0，支持:
 - `tools/list`: 获取设备能力列表
 - `tools/call`: 调用设备功能 (音量、灯光、GPIO 等)
+
+### MQTT 网关协议 (IoT 设备接入)
+
+网关将 IoT 设备常用的 MQTT+UDP 协议转换为 WebSocket 协议。
+
+**完整数据流:**
+```
+┌─────────────────── 上行数据流 (用户语音 → AI) ───────────────────┐
+│                                                                  │
+│  ESP32 ──MQTT──► Gateway ──WebSocket──► Cloud                   │
+│         (JSON控制)        (JSON控制)                              │
+│                                                                  │
+│  ESP32 ──UDP───► Gateway ──WebSocket──► Cloud                   │
+│      (加密Opus)     (解密)    (Binary)                           │
+│                                                                  │
+├─────────────────── 下行数据流 (AI回复 → 用户) ───────────────────┤
+│                                                                  │
+│  Cloud ──WebSocket──► Gateway ──MQTT──► ESP32                   │
+│        (JSON控制)            (JSON控制)                          │
+│                                                                  │
+│  Cloud ──WebSocket──► Gateway ──UDP───► ESP32                   │
+│        (Binary)        (加密)   (加密Opus)                        │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+**MQTT 设备认证:**
+- `clientId`: `{GroupID}@@@{MAC地址}@@@{UUID}`
+- `username`: Base64 编码的 JSON 用户数据
+- `password`: `HMAC-SHA256(clientId + "|" + username, SIGNATURE_KEY)`
+
+**UDP 音频加密:**
+- 算法: AES-128-CTR
+- 密钥: 每次会话生成随机 16 字节
+- 帧格式: 16字节Header + 加密Opus数据
+
+**UDP Header 格式 (16字节):**
+| Offset | Size | Field |
+|--------|------|-------|
+| 0 | 1 | type (1=音频) |
+| 2 | 2 | payloadLength |
+| 4 | 4 | connectionId |
+| 8 | 4 | timestamp (60ms/帧) |
+| 12 | 4 | sequence |
+
+**网关管理 API:**
+```bash
+# 设备指令下发 (MCP)
+POST /api/commands/:clientId
+Body: {type: "mcp", payload: {method: "tools/call", params: {...}}}
+
+# 批量设备状态查询
+POST /api/devices/status
+Body: {clientIds: ["GID@@@MAC@@@UUID", ...]}
+```
 
 ## 测试指令
 - 运行全部测试: `uv run pytest`

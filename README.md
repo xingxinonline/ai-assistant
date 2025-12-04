@@ -105,7 +105,7 @@ ai-assistant/
 |------|------|------|
 | **硬件端** | `SDK/xiaozhi-esp32` | ESP32 固件，支持 70+ 开发板 |
 | **云端服务** | `SDK/xiaozhi-esp32-server` | 完整 Python 服务端参考实现 |
-| **MQTT 网关** | `SDK/xiaozhi-mqtt-gateway` | IoT 设备指令下发网关 |
+| **MQTT 网关** | `SDK/xiaozhi-mqtt-gateway` | MQTT+UDP → WebSocket 协议桥接 |
 
 ## ⚙️ 配置说明
 
@@ -138,6 +138,23 @@ ai-assistant/
 | **VAD** | SileroVAD(本地) |
 | **Memory** | mem0ai、本地短期记忆 |
 | **Intent** | function_call、intent_llm |
+
+### MQTT 网关数据流
+
+MQTT 网关将低功耗 IoT 设备的 MQTT+UDP 协议转换为 WebSocket，实现与云端服务的双向通信：
+
+```
+ESP32 ──MQTT(JSON)──► Gateway ──WebSocket──► Python Cloud
+      ──UDP(Opus)───►         ──Binary────►
+      ◄──MQTT(JSON)──         ◄──WebSocket──
+      ◄──UDP(Opus)───         ◄──Binary────
+```
+
+**特点:**
+- 🔐 **HMAC-SHA256 设备认证** - 防止未授权设备接入
+- 🔒 **AES-128-CTR 音频加密** - 每会话随机密钥
+- 📡 **UDP 低延迟传输** - 60ms 帧，支持序列号纠错
+- 🛠️ **REST API 设备管理** - 远程下发指令、查询状态
 
 ## 🧪 开发指南
 
