@@ -113,6 +113,13 @@ temp/
 *.tmp
 *.temp
 
+# -------------------- ESP32 SDK --------------------
+# ESP-IDF 构建产物
+SDK/*/build/
+SDK/*/sdkconfig
+SDK/*/sdkconfig.old
+SDK/*/.cache/
+
 # 模型文件 (通常很大)
 models/
 *.onnx

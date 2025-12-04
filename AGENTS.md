@@ -3,14 +3,37 @@
 ## 项目概述
 这是一个端到端的语音聊天助手/陪伴机器人项目，支持语音输入、智能对话和语音输出。
 
+### 系统架构
+```
+┌─────────────────┐     WebSocket      ┌─────────────────┐
+│  ESP32 硬件端    │ ◄──────────────► │   Python 服务端   │
+│  (xiaozhi-esp32) │     Opus Audio    │   (本项目)       │
+└─────────────────┘                    └─────────────────┘
+        │                                      │
+        │ 语音输入/输出                          │ LLM/ASR/TTS
+        ▼                                      ▼
+    用户交互                              智谱/Gitee AI
+```
+
+### 核心组件
+- **服务端 (Python)**: 本项目，处理 ASR → LLM → TTS 流程
+- **硬件端 (ESP32)**: `SDK/xiaozhi-esp32`，处理音频采集和播放
+- **通信协议**: WebSocket + Opus 音频编解码 + MCP 控制协议
+
 ## 开发环境
 
-### 环境管理
+### Python 服务端 (UV 管理)
 - 使用 **UV** 管理 Python 虚拟环境和依赖
 - Python 版本: 3.11+
 - 激活环境: `uv venv && .venv\Scripts\activate` (Windows)
 - 安装依赖: `uv pip install -r requirements.txt` 或 `uv sync`
 - 运行脚本: `uv run python <script.py>`
+
+### ESP32 硬件端 (ESP-IDF)
+- SDK 路径: `SDK/xiaozhi-esp32`
+- 开发环境: ESP-IDF 5.4+
+- 支持芯片: ESP32-C3, ESP32-S3, ESP32-P4
+- 参考文档: `SDK/xiaozhi-esp32/README_zh.md`
 
 ### 常用命令
 - 创建虚拟环境: `uv venv`
@@ -45,14 +68,47 @@ ai-assistant/
 ├── .env                # 实际环境变量 (不提交到 Git)
 ├── .gitignore          # Git 忽略配置
 ├── pyproject.toml      # 项目配置和依赖
-├── src/                # 源代码目录
+├── src/                # Python 服务端源代码
 │   ├── __init__.py
-│   ├── llm/            # LLM 相关模块
-│   ├── voice/          # 语音处理模块
+│   ├── main.py         # 服务端入口
+│   ├── llm/            # LLM 对话模块
+│   ├── asr/            # 语音识别模块
+│   ├── tts/            # 语音合成模块
+│   ├── protocol/       # WebSocket/MCP 协议
 │   └── utils/          # 工具函数
+├── SDK/                # 硬件端 SDK
+│   └── xiaozhi-esp32/  # 小智 ESP32 固件源码
+│       ├── main/       # 主程序代码
+│       ├── docs/       # 协议文档
+│       └── ...         # ESP-IDF 项目结构
 ├── tests/              # 测试目录
 └── docs/               # 文档目录
 ```
+
+## 通信协议
+
+### WebSocket 协议
+详见 `SDK/xiaozhi-esp32/docs/websocket.md`
+
+**握手流程:**
+1. 设备连接 → 发送 `hello` 消息 (含 audio_params)
+2. 服务端回复 `hello` 消息 (含 session_id)
+3. 双向音频流 (Opus 编码) + JSON 控制消息
+
+**消息类型:**
+- `hello`: 握手消息
+- `listen`: 开始/停止监听
+- `stt`: 语音识别结果
+- `tts`: 语音合成控制
+- `llm`: 表情/情绪控制
+- `mcp`: 设备控制协议
+
+### MCP 协议 (设备控制)
+详见 `SDK/xiaozhi-esp32/docs/mcp-protocol.md`
+
+基于 JSON-RPC 2.0，支持:
+- `tools/list`: 获取设备能力列表
+- `tools/call`: 调用设备功能 (音量、灯光、GPIO 等)
 
 ## 测试指令
 - 运行全部测试: `uv run pytest`

@@ -3,21 +3,28 @@
 ## 项目简介
 端到端语音聊天助手/陪伴机器人项目，提供语音输入 → 智能对话 → 语音输出的完整交互体验。
 
+基于 **小智 AI** 开源生态，本项目实现 Python 服务端，配合 ESP32 硬件端 (`SDK/xiaozhi-esp32`) 使用。
+
 ## 开发环境
 
-### Python 环境管理 (重要)
+### Python 服务端 (重要: 使用 UV)
 **必须使用 UV 管理虚拟环境和运行 Python 代码**
 - 创建环境: `uv venv`
 - 安装依赖: `uv pip install <package>` 或 `uv sync`
 - 运行代码: `uv run python <script.py>`
 - 运行测试: `uv run pytest`
 
+### ESP32 硬件端
+- SDK 位置: `SDK/xiaozhi-esp32/`
+- 开发工具: VSCode + ESP-IDF 插件 (v5.4+)
+- 协议文档: `SDK/xiaozhi-esp32/docs/`
+
 ### 快速命令
 ```bash
 # 初始化项目
 uv venv && uv sync
 
-# 运行项目
+# 运行服务端
 uv run python src/main.py
 
 # 代码质量
@@ -42,16 +49,26 @@ uv run pytest
 ## 文件边界
 
 ### 可安全编辑
-- `src/` - 源代码
+- `src/` - Python 服务端源代码
 - `tests/` - 测试代码
 - `docs/` - 文档
 - `*.md` - Markdown 文档
+
+### 谨慎修改
+- `SDK/xiaozhi-esp32/` - ESP32 硬件端源码 (C++ 代码)
 
 ### 禁止修改
 - `.venv/` - 虚拟环境
 - `__pycache__/` - Python 缓存
 - `.env` - 包含敏感的 API 密钥
 - `uv.lock` - 依赖锁定文件 (除非明确需要更新)
+
+## 关键协议文档
+
+需要实现服务端时，参考以下文档:
+- `SDK/xiaozhi-esp32/docs/websocket.md` - WebSocket 通信协议
+- `SDK/xiaozhi-esp32/docs/mcp-protocol.md` - MCP 设备控制协议
+- `SDK/xiaozhi-esp32/docs/mcp-usage.md` - MCP 使用示例
 
 ## 代码规范
 

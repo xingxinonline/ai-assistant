@@ -2,12 +2,37 @@
 
 一个端到端的语音聊天助手/陪伴机器人项目，提供自然的语音交互体验。
 
+基于 [小智 AI](https://github.com/78/xiaozhi-esp32) 开源生态，实现 Python 服务端，配合 ESP32 硬件端使用。
+
 ## ✨ 功能特性
 
 - 🎤 **语音输入** - 实时语音识别，支持中文对话
 - 🤖 **智能对话** - 基于大语言模型的智能回复
 - 🔊 **语音输出** - 自然语音合成，流畅的对话体验
 - 📝 **文本处理** - 支持摘要、总结等文本任务
+- 🔌 **硬件支持** - 兼容 70+ 种 ESP32 开发板
+- 🌐 **MCP 协议** - 支持设备控制和智能家居联动
+
+## 🏗️ 系统架构
+
+```
+┌─────────────────────┐                    ┌─────────────────────┐
+│    ESP32 硬件端      │   WebSocket/Opus   │    Python 服务端     │
+│  (xiaozhi-esp32)    │ ◄────────────────► │     (本项目)         │
+│                     │                    │                     │
+│  • 语音采集 (Mic)    │                    │  • ASR 语音识别      │
+│  • 语音播放 (Speaker)│                    │  • LLM 对话生成      │
+│  • 显示屏/LED        │                    │  • TTS 语音合成      │
+│  • 唤醒词检测        │                    │  • MCP 设备控制      │
+└─────────────────────┘                    └─────────────────────┘
+                                                     │
+                                                     ▼
+                                           ┌─────────────────────┐
+                                           │     AI 服务         │
+                                           │  • 智谱 GLM         │
+                                           │  • Gitee AI         │
+                                           └─────────────────────┘
+```
 
 ## 🚀 快速开始
 
@@ -66,12 +91,16 @@ ai-assistant/
 ├── .env                # 实际环境变量 (需自行创建)
 ├── .gitignore          # Git 忽略配置
 ├── pyproject.toml      # 项目配置和依赖
-├── src/                # 源代码目录
+├── src/                # Python 服务端源代码
 │   ├── __init__.py
-│   ├── main.py         # 主入口
-│   ├── llm/            # LLM 相关模块
-│   ├── voice/          # 语音处理模块
+│   ├── main.py         # 服务端入口
+│   ├── asr/            # ASR 语音识别
+│   ├── llm/            # LLM 对话模块
+│   ├── tts/            # TTS 语音合成
+│   ├── protocol/       # 通信协议 (WebSocket/MCP)
 │   └── utils/          # 工具函数
+├── SDK/                # 硬件端 SDK
+│   └── xiaozhi-esp32/  # 小智 ESP32 固件 (C++)
 ├── tests/              # 测试目录
 └── docs/               # 文档目录
 ```
@@ -124,6 +153,18 @@ uv pip install <package-name>
 # 同步所有依赖
 uv sync
 ```
+
+## 🔗 相关资源
+
+### 小智 AI 生态
+- [xiaozhi-esp32](https://github.com/78/xiaozhi-esp32) - ESP32 硬件端固件
+- [xiaozhi.me](https://xiaozhi.me) - 官方云服务
+- [小智百科全书](https://ccnphfhqs21z.feishu.cn/wiki/F5krwD16viZoF0kKkvDcrZNYnhb) - 详细教程
+
+### 第三方服务端实现
+- [xinnan-tech/xiaozhi-esp32-server](https://github.com/xinnan-tech/xiaozhi-esp32-server) - Python
+- [joey-zhou/xiaozhi-esp32-server-java](https://github.com/joey-zhou/xiaozhi-esp32-server-java) - Java
+- [AnimeAIChat/xiaozhi-server-go](https://github.com/AnimeAIChat/xiaozhi-server-go) - Golang
 
 ## 📄 许可证
 
