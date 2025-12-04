@@ -4,9 +4,35 @@
 
 ## 项目概述
 
-端到端语音聊天助手项目，基于 **小智 AI** 开源生态。
+**全栈嵌入式 AI 语音助手项目**，基于 **小智 AI** 开源生态。
 
 **核心流程**: 用户语音 → ASR识别 → LLM对话 → TTS合成 → 语音播放
+
+### 全栈分层架构
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         全栈架构                                 │
+├─────────────────────────────────────────────────────────────────┤
+│  硬件层        │  固件层        │  云端层        │  应用层       │
+│  Hardware     │  Firmware     │  Cloud        │  Apps        │
+│               │               │               │              │
+│  ESP32-S3     │  ESP-IDF      │  Python (本项目)│ Web/App/小程序│
+│  传感器/音频   │  xiaozhi-esp32│  ASR/LLM/TTS  │  智控台       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 硬件平台
+
+**立创·实战派 ESP32-S3** ([详细规格](docs/agent_context/hardware.md))
+
+| 核心 | 规格 |
+|------|------|
+| 芯片 | ESP32-S3 双核 240MHz, 16MB Flash, 8MB PSRAM |
+| 显示 | 2寸 IPS 触摸屏 (320×240) |
+| 音频 | 双麦克风 + 喇叭 (ES8311/ES7210/NS4150B) |
+| 传感器 | 六轴姿态 (QMI8658) |
+| 通信 | Wi-Fi + BLE 5.0 |
 
 ## 项目结构
 
@@ -16,6 +42,7 @@ ai-assistant/
 ├── tests/                  # 测试目录
 ├── docs/                   # 文档目录
 │   └── agent_context/      # AI Agent 详细参考文档
+│       ├── hardware.md         # 硬件平台说明
 │       ├── sdk_reference.md    # SDK 组件详解
 │       ├── protocols.md        # 通信协议详解
 │       └── architecture.md     # 系统架构说明
@@ -157,10 +184,11 @@ HOW:
 
 当需要更详细的信息时，请阅读以下文档：
 
-| 需要了解                      | 阅读文档                                        |
-| ----------------------------- | ----------------------------------------------- |
-| SDK 各组件详细说明            | `docs/agent_context/sdk_reference.md`           |
-| 通信协议 (WebSocket/MCP/MQTT) | `docs/agent_context/protocols.md`               |
-| 系统架构和部署                | `docs/agent_context/architecture.md`            |
-| ESP32 协议原始文档            | `SDK/xiaozhi-esp32/docs/`                       |
-| 云端服务参考实现              | `SDK/xiaozhi-esp32-server/main/xiaozhi-server/` |
+| 需要了解 | 阅读文档 |
+|----------|----------|
+| **硬件平台** (ESP32-S3 规格/引脚) | `docs/agent_context/hardware.md` |
+| SDK 各组件详细说明 | `docs/agent_context/sdk_reference.md` |
+| 通信协议 (WebSocket/MCP/MQTT) | `docs/agent_context/protocols.md` |
+| 系统架构和部署 | `docs/agent_context/architecture.md` |
+| ESP32 协议原始文档 | `SDK/xiaozhi-esp32/docs/` |
+| 云端服务参考实现 | `SDK/xiaozhi-esp32-server/main/xiaozhi-server/` |
