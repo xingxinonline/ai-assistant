@@ -73,6 +73,19 @@ ai-assistant/
 
 ## 开发环境
 
+### CRITICAL: 克隆项目 (含子模块)
+
+```bash
+# 首次克隆 (必须加 --recursive)
+git clone --recursive <repo-url>
+
+# 已克隆后初始化子模块
+git submodule update --init --recursive
+
+# 更新子模块到最新
+git submodule update --remote
+```
+
 ### CRITICAL: 使用 UV 管理 Python
 
 ```bash
