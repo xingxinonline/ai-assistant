@@ -177,6 +177,6 @@ idf.py monitor
 
 | 文档 | 路径 |
 |------|------|
-| 固件源码 | `SDK/xiaozhi-esp32/` |
+| 固件源码 | `third_party/xiaozhi-esp32/` |
 | 通信协议 | `docs/agent_context/protocols.md` |
 | 系统架构 | `docs/agent_context/architecture.md` |
