@@ -3,10 +3,11 @@
 ## 项目概述
 这是一个端到端的语音聊天助手/陪伴机器人项目，支持语音输入、智能对话和语音输出。
 
-基于 **小智 AI** 开源生态，本项目包含三个核心组件：
+基于 **小智 AI** 开源生态，本项目包含四个核心组件：
 - 硬件端 (ESP32): `SDK/xiaozhi-esp32`
 - 云端服务 (Python): `SDK/xiaozhi-esp32-server`
 - MQTT 网关 (Node.js): `SDK/xiaozhi-mqtt-gateway`
+- 声纹识别 (Python): `SDK/voiceprint-api`
 
 ### 系统架构
 
@@ -108,7 +109,8 @@ ai-assistant/
 ├── SDK/                    # 参考实现 (第三方开源项目)
 │   ├── xiaozhi-esp32/      # ESP32 硬件端固件 (C++)
 │   ├── xiaozhi-esp32-server/ # Python 云端服务参考实现
-│   └── xiaozhi-mqtt-gateway/ # MQTT 网关 (Node.js)
+│   ├── xiaozhi-mqtt-gateway/ # MQTT 网关 (Node.js)
+│   └── voiceprint-api/     # 声纹识别服务 (Python)
 ├── tests/                  # 测试目录
 └── docs/                   # 文档目录
 ```
@@ -136,6 +138,23 @@ ai-assistant/
   - `app.js` - 主入口，MQTT/UDP 服务器，WebSocket 桥接
   - `mqtt-protocol.js` - MQTT 3.1.1 协议解析与封装
   - `utils/mqtt_config_v2.js` - 设备认证签名生成与验证
+
+### voiceprint-api (声纹识别服务)
+- 路径: `SDK/voiceprint-api`
+- 语言: Python 3.10 + FastAPI
+- 功能: 基于 3D-Speaker 模型的声纹识别，用于说话人识别
+- 核心文件:
+  - `app/services/voiceprint_service.py` - 声纹提取/注册/识别服务
+  - `app/api/v1/voiceprint.py` - REST API 接口
+  - `app/database/voiceprint_db.py` - MySQL 声纹存储
+- API 接口:
+  - `POST /voiceprint/register` - 注册声纹 (speaker_id + WAV音频)
+  - `POST /voiceprint/identify` - 识别声纹 (返回 speaker_id + 相似度)
+  - `DELETE /voiceprint/{speaker_id}` - 删除声纹
+- 技术特点:
+  - 模型: `iic/speech_campplus_sv_zh-cn_3dspeaker_16k` (ModelScope)
+  - 特征计算: 余弦相似度
+  - 音频处理: 自动重采样到 16kHz
 
 ## 通信协议
 

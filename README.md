@@ -12,6 +12,7 @@
 - 📝 **文本处理** - 支持摘要、总结等文本任务
 - 🔌 **硬件支持** - 兼容 70+ 种 ESP32 开发板
 - 🌐 **MCP 协议** - 支持设备控制和智能家居联动
+- 🎭 **声纹识别** - 支持说话人识别，个性化对话体验
 
 ## 🏗️ 系统架构
 
@@ -122,6 +123,7 @@ ai-assistant/
 | **硬件端** | `SDK/xiaozhi-esp32` | ESP32 固件，支持 70+ 开发板 |
 | **云端服务** | `SDK/xiaozhi-esp32-server` | 完整 Python 服务端参考实现 |
 | **MQTT 网关** | `SDK/xiaozhi-mqtt-gateway` | MQTT+UDP → WebSocket 协议桥接 |
+| **声纹识别** | `SDK/voiceprint-api` | 3D-Speaker 说话人识别服务 |
 
 ## ⚙️ 配置说明
 

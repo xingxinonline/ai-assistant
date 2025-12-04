@@ -3,10 +3,11 @@
 ## 项目简介
 端到端语音聊天助手/陪伴机器人项目，提供语音输入 → 智能对话 → 语音输出的完整交互体验。
 
-基于 **小智 AI** 开源生态，本项目包含三个核心组件：
+基于 **小智 AI** 开源生态，本项目包含四个核心组件：
 - **硬件端** (ESP32): `SDK/xiaozhi-esp32` - 音频采集/播放、唤醒词检测
 - **云端服务** (Python): `SDK/xiaozhi-esp32-server` - ASR/LLM/TTS 处理
 - **MQTT 网关** (Node.js): `SDK/xiaozhi-mqtt-gateway` - 协议桥接
+- **声纹识别** (Python): `SDK/voiceprint-api` - 说话人识别
 
 ### 系统架构
 ```
@@ -88,6 +89,11 @@ MQTT 网关核心文件:
 - `SDK/xiaozhi-mqtt-gateway/app.js` - 主入口，MQTT/UDP 服务器，WebSocket 桥接
 - `SDK/xiaozhi-mqtt-gateway/mqtt-protocol.js` - MQTT 3.1.1 协议解析与封装
 - `SDK/xiaozhi-mqtt-gateway/utils/mqtt_config_v2.js` - 设备认证签名 (HMAC-SHA256)
+
+声纹识别核心文件:
+- `SDK/voiceprint-api/app/services/voiceprint_service.py` - 声纹提取/识别服务
+- `SDK/voiceprint-api/app/api/v1/voiceprint.py` - REST API 接口
+- `SDK/voiceprint-api/voiceprint.yaml` - 配置模板
 
 ## 通信协议速查
 
