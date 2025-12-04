@@ -65,7 +65,6 @@ ai-assistant/
 │   ├── voiceprint-api/         # 声纹识别 (Python)
 │   └── mcp-endpoint-server/    # MCP 接入点 (Python)
 ├── AGENTS.md               # 本文件
-├── CLAUDE.md               # Claude 专用配置
 └── README.md               # 项目说明
 ```
 
