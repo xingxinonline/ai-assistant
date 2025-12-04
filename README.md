@@ -84,26 +84,28 @@ uv run python src/main.py
 
 ```
 ai-assistant/
-├── AGENTS.md           # AI Agent 指导文件
-├── CLAUDE.md           # Claude 专用配置
-├── README.md           # 项目说明文档 (本文件)
-├── .env.example        # 环境变量模板
-├── .env                # 实际环境变量 (需自行创建)
-├── .gitignore          # Git 忽略配置
-├── pyproject.toml      # 项目配置和依赖
-├── src/                # Python 服务端源代码
-│   ├── __init__.py
-│   ├── main.py         # 服务端入口
-│   ├── asr/            # ASR 语音识别
-│   ├── llm/            # LLM 对话模块
-│   ├── tts/            # TTS 语音合成
-│   ├── protocol/       # 通信协议 (WebSocket/MCP)
-│   └── utils/          # 工具函数
-├── SDK/                # 硬件端 SDK
-│   └── xiaozhi-esp32/  # 小智 ESP32 固件 (C++)
-├── tests/              # 测试目录
-└── docs/               # 文档目录
+├── AGENTS.md               # AI Agent 指导文件
+├── CLAUDE.md               # Claude 专用配置
+├── README.md               # 项目说明文档 (本文件)
+├── .env.example            # 环境变量模板
+├── .env                    # 实际环境变量 (需自行创建)
+├── pyproject.toml          # 项目配置和依赖
+├── src/                    # 本项目 Python 服务端源代码
+├── SDK/                    # 参考实现 (Git Submodule)
+│   ├── xiaozhi-esp32/      # ESP32 硬件端固件 (C++)
+│   ├── xiaozhi-esp32-server/ # Python 云端参考实现
+│   └── xiaozhi-mqtt-gateway/ # MQTT 网关 (Node.js)
+├── tests/                  # 测试目录
+└── docs/                   # 文档目录
 ```
+
+### SDK 组件说明
+
+| 组件 | 路径 | 说明 |
+|------|------|------|
+| **硬件端** | `SDK/xiaozhi-esp32` | ESP32 固件，支持 70+ 开发板 |
+| **云端服务** | `SDK/xiaozhi-esp32-server` | 完整 Python 服务端参考实现 |
+| **MQTT 网关** | `SDK/xiaozhi-mqtt-gateway` | IoT 设备指令下发网关 |
 
 ## ⚙️ 配置说明
 
@@ -125,6 +127,17 @@ ai-assistant/
 | 摘要总结 | `glm-4-flash-250414` | 适合文本处理任务 |
 | 文本嵌入 | `bge-m3` | 1024 维向量 |
 | 重排序 | `bge-reranker-v2-m3` | 语义相关性排序 |
+
+### 云端服务支持的模块 (参考 SDK)
+
+| 模块 | 支持的平台 |
+|------|---------------|
+| **ASR** | FunASR(本地)、火山引擎、讯飞、阿里云、腾讯、百度 |
+| **LLM** | 智谱 GLM、阿里百炼、电豆 Doubao、DeepSeek、Gemini、Ollama |
+| **TTS** | EdgeTTS(免费)、火山引擎、阿里云、腾讯、讯飞、FishSpeech |
+| **VAD** | SileroVAD(本地) |
+| **Memory** | mem0ai、本地短期记忆 |
+| **Intent** | function_call、intent_llm |
 
 ## 🧪 开发指南
 

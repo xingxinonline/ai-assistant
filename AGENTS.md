@@ -3,16 +3,32 @@
 ## 项目概述
 这是一个端到端的语音聊天助手/陪伴机器人项目，支持语音输入、智能对话和语音输出。
 
+基于 **小智 AI** 开源生态，本项目包含三个核心组件：
+- 硬件端 (ESP32): `SDK/xiaozhi-esp32`
+- 云端服务 (Python): `SDK/xiaozhi-esp32-server`
+- MQTT 网关 (Node.js): `SDK/xiaozhi-mqtt-gateway`
+
 ### 系统架构
 ```
-┌─────────────────┐     WebSocket      ┌─────────────────┐
-│  ESP32 硬件端    │ ◄──────────────► │   Python 服务端   │
-│  (xiaozhi-esp32) │     Opus Audio    │   (本项目)       │
-└─────────────────┘                    └─────────────────┘
-        │                                      │
-        │ 语音输入/输出                          │ LLM/ASR/TTS
+┌───────────────────┐              ┌─────────────────────────────┐
+│   ESP32 硬件端     │  WebSocket   │      Python 云端服务          │
+│  xiaozhi-esp32    │ ◄──────────► │   xiaozhi-esp32-server       │
+│                   │  Opus Audio  │                             │
+│  • 音频采集/播放    │              │  • ASR: FunASR/火山/讯飞     │
+│  • 唤醒词检测      │              │  • LLM: 智谱/电豆/DeepSeek   │
+│  • 显示屏/LED      │              │  • TTS: Edge/火山/阿里云    │
+│  • MCP 设备控制    │              │  • VAD: SileroVAD          │
+└───────────────────┘              │  • 意图识别/记忆/插件      │
+        │                          └─────────────────────────────┘
+        │ MQTT+UDP (IoT控制)                    │
         ▼                                      ▼
-    用户交互                              智谱/Gitee AI
+┌───────────────────┐              ┌─────────────────────┐
+│    MQTT 网关        │              │      AI 服务           │
+│ xiaozhi-mqtt-gw   │              │  • 智谱 GLM            │
+│                   │              │  • 电豆 Doubao         │
+│  • 设备指令下发     │              │  • Gitee AI           │
+│  • WebSocket桥接   │              │  • 火山引擎            │
+└───────────────────┘              └─────────────────────┘
 ```
 
 ### 核心组件
@@ -61,29 +77,48 @@
 ## 项目结构
 ```
 ai-assistant/
-├── AGENTS.md           # AI Agent 指导文件
-├── CLAUDE.md           # Claude 专用配置
-├── README.md           # 项目说明文档
-├── .env.example        # 环境变量模板
-├── .env                # 实际环境变量 (不提交到 Git)
-├── .gitignore          # Git 忽略配置
-├── pyproject.toml      # 项目配置和依赖
-├── src/                # Python 服务端源代码
+├── AGENTS.md               # AI Agent 指导文件
+├── CLAUDE.md               # Claude 专用配置
+├── README.md               # 项目说明文档
+├── .env.example            # 环境变量模板
+├── .env                    # 实际环境变量 (不提交到 Git)
+├── .gitignore              # Git 忽略配置
+├── pyproject.toml          # 项目配置和依赖
+├── src/                    # Python 服务端源代码 (本项目开发)
 │   ├── __init__.py
-│   ├── main.py         # 服务端入口
-│   ├── llm/            # LLM 对话模块
-│   ├── asr/            # 语音识别模块
-│   ├── tts/            # 语音合成模块
-│   ├── protocol/       # WebSocket/MCP 协议
-│   └── utils/          # 工具函数
-├── SDK/                # 硬件端 SDK
-│   └── xiaozhi-esp32/  # 小智 ESP32 固件源码
-│       ├── main/       # 主程序代码
-│       ├── docs/       # 协议文档
-│       └── ...         # ESP-IDF 项目结构
-├── tests/              # 测试目录
-└── docs/               # 文档目录
+│   ├── main.py             # 服务端入口
+│   ├── llm/                # LLM 对话模块
+│   ├── asr/                # 语音识别模块
+│   ├── tts/                # 语音合成模块
+│   ├── protocol/           # WebSocket/MCP 协议
+│   └── utils/              # 工具函数
+├── SDK/                    # 参考实现 (第三方开源项目)
+│   ├── xiaozhi-esp32/      # ESP32 硬件端固件 (C++)
+│   ├── xiaozhi-esp32-server/ # Python 云端服务参考实现
+│   └── xiaozhi-mqtt-gateway/ # MQTT 网关 (Node.js)
+├── tests/                  # 测试目录
+└── docs/                   # 文档目录
 ```
+
+## SDK 参考实现
+
+### xiaozhi-esp32 (硬件端)
+- 路径: `SDK/xiaozhi-esp32`
+- 语言: C++ (ESP-IDF 5.4+)
+- 功能: 音频采集/播放、唤醒词检测、MCP 设备控制
+- 协议文档: `SDK/xiaozhi-esp32/docs/websocket.md`
+
+### xiaozhi-esp32-server (云端服务)
+- 路径: `SDK/xiaozhi-esp32-server/main/xiaozhi-server`
+- 语言: Python 3.10
+- 功能: 完整的 ASR/LLM/TTS 流程实现
+- 配置: `config.yaml` - 模块配置参考
+- 核心代码: `core/` 目录
+
+### xiaozhi-mqtt-gateway (MQTT 网关)
+- 路径: `SDK/xiaozhi-mqtt-gateway`
+- 语言: Node.js
+- 功能: MQTT+UDP 到 WebSocket 桥接，设备指令下发
 
 ## 通信协议
 

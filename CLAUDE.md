@@ -70,6 +70,11 @@ uv run pytest
 - `SDK/xiaozhi-esp32/docs/mcp-protocol.md` - MCP 设备控制协议
 - `SDK/xiaozhi-esp32/docs/mcp-usage.md` - MCP 使用示例
 
+云端服务参考实现:
+- `SDK/xiaozhi-esp32-server/main/xiaozhi-server/config.yaml` - 完整配置参考
+- `SDK/xiaozhi-esp32-server/main/xiaozhi-server/core/` - 核心实现代码
+- `SDK/xiaozhi-esp32-server/main/xiaozhi-server/core/providers/` - ASR/LLM/TTS 提供者
+
 ## 代码规范
 
 ### 风格指南
