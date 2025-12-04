@@ -254,14 +254,59 @@ results = memory.search(query="用户的饮食偏好", user_id="user_123")
 ### 基本信息
 - **路径**: `SDK/LightRAG`
 - **语言**: Python 3.10+
-- **用途**: 基于知识图谱的 RAG 系统，支持复杂查询
-- **文档**: `SDK/LightRAG/README.md`
+- **用途**: 基于知识图谱的 RAG 系统，支持复杂多跳查询
+- **文档**: `SDK/LightRAG/README.md`, `SDK/LightRAG/docs/`
 
-### 核心特性
-- 图结构知识存储
-- 实体关系提取
-- 多跳查询支持
-- 增量更新
+### 核心 API
+
+| 方法 | 功能 | 说明 |
+|------|------|------|
+| `rag.ainsert()` | 插入文档 | 自动提取实体关系构建知识图谱 |
+| `rag.aquery()` | 查询 | 支持多种检索模式 |
+| `rag.adelete_by_doc_id()` | 删除文档 | 自动重建 KG |
+| `rag.get_knowledge_graph()` | 获取知识图谱 | 返回节点和边 |
+| `rag.get_graph_labels()` | 获取实体标签 | 列出所有实体类型 |
+
+### 查询模式 (QueryParam.mode)
+
+| 模式 | 说明 | 适用场景 |
+|------|------|----------|
+| `naive` | 向量相似度搜索 | 简单问题 |
+| `local` | 局部知识图谱检索 | 实体相关问题 |
+| `global` | 全局知识图谱检索 | 跨实体关系问题 |
+| `hybrid` | 混合检索 | 复杂问题 (推荐) |
+| `mix` | 混合 + Rerank | 最高质量 (默认) |
+
+### 关键特性
+- ✅ 知识图谱自动构建 (实体/关系提取)
+- ✅ 多跳推理能力
+- ✅ 增量更新知识
+- ✅ 支持 Reranker 提升精度
+- ✅ 多种存储后端 (NetworkX/Neo4j/PostgreSQL)
+
+### 代码示例
+```python
+from lightrag import LightRAG, QueryParam
+
+rag = LightRAG(
+    working_dir="./rag_storage",
+    llm_model_func=llm_func,
+    embedding_func=embed_func,
+)
+
+await rag.initialize_storages()
+
+# 插入文档 (自动构建知识图谱)
+await rag.ainsert("文档内容...")
+
+# 查询 (使用混合模式)
+result = await rag.aquery(
+    "问题内容",
+    param=QueryParam(mode="hybrid")
+)
+
+await rag.finalize_storages()
+```
 
 ---
 
