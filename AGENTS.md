@@ -63,7 +63,9 @@ ai-assistant/
 │   ├── xiaozhi-esp32-server/   # Python 云端参考实现
 │   ├── xiaozhi-mqtt-gateway/   # MQTT 网关 (Node.js)
 │   ├── voiceprint-api/         # 声纹识别 (Python)
-│   └── mcp-endpoint-server/    # MCP 接入点 (Python)
+│   ├── mcp-endpoint-server/    # MCP 接入点 (Python)
+│   ├── mem0/                   # 🆕 AI 记忆管理库 (Python)
+│   └── LightRAG/               # 知识图谱 RAG (Python)
 ├── AGENTS.md               # 本文件
 └── README.md               # 项目说明
 ```

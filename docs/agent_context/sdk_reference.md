@@ -11,6 +11,8 @@
 | **xiaozhi-mqtt-gateway** | `SDK/xiaozhi-mqtt-gateway` | Node.js         | MQTT 协议网关     |
 | **voiceprint-api**       | `SDK/voiceprint-api`       | Python          | 声纹识别服务      |
 | **mcp-endpoint-server**  | `SDK/mcp-endpoint-server`  | Python          | MCP 工具注册中心  |
+| **mem0** 🆕             | `SDK/mem0`                 | Python          | AI 记忆管理库     |
+| **LightRAG**             | `SDK/LightRAG`             | Python          | 知识图谱 RAG     |
 
 ---
 
@@ -193,6 +195,73 @@ pnpm build:app       # App 构建
      │  注册工具列表            │  转发 JSON-RPC        │  调用工具
      └──────────────────────►◄──────────────────────┘
 ```
+
+---
+
+## mem0 (AI 记忆管理库)
+
+### 基本信息
+- **路径**: `SDK/mem0`
+- **语言**: Python 3.10+
+- **用途**: 为 AI 助手提供智能记忆层，支持用户偏好、会话上下文、长期记忆
+- **文档**: `SDK/mem0/README.md`, `SDK/mem0/docs/`
+
+### 核心 API
+
+| 方法 | 功能 | 说明 |
+|------|------|------|
+| `memory.add()` | 添加记忆 | 自动提取事实并去重 |
+| `memory.search()` | 搜索记忆 | 语义搜索 + Rerank |
+| `memory.get()` | 获取记忆 | 按 ID 获取 |
+| `memory.get_all()` | 获取所有 | 按 user_id/agent_id 过滤 |
+| `memory.update()` | 更新记忆 | 按 ID 更新 |
+| `memory.delete()` | 删除记忆 | 按 ID 删除 |
+| `memory.history()` | 记忆历史 | 查看变更历史 |
+
+### 记忆类型
+- **User Memory**: 用户偏好和个人信息
+- **Session Memory**: 会话上下文
+- **Agent Memory**: 智能体状态
+- **Procedural Memory**: 操作流程记忆
+
+### 关键特性
+- ✅ 自动事实提取 (LLM 驱动)
+- ✅ 记忆去重与合并
+- ✅ 支持 Graph Store (关系提取)
+- ✅ 异步 API (AsyncMemory)
+- ✅ 多种向量库支持 (Qdrant/Faiss/Chroma)
+
+### 代码示例
+```python
+from mem0 import Memory
+
+memory = Memory()
+
+# 添加记忆 (自动提取事实)
+memory.add(
+    messages=[{"role": "user", "content": "我喜欢吃四川菜，但不能吃辣"}],
+    user_id="user_123"
+)
+
+# 搜索相关记忆
+results = memory.search(query="用户的饮食偏好", user_id="user_123")
+```
+
+---
+
+## LightRAG (知识图谱 RAG)
+
+### 基本信息
+- **路径**: `SDK/LightRAG`
+- **语言**: Python 3.10+
+- **用途**: 基于知识图谱的 RAG 系统，支持复杂查询
+- **文档**: `SDK/LightRAG/README.md`
+
+### 核心特性
+- 图结构知识存储
+- 实体关系提取
+- 多跳查询支持
+- 增量更新
 
 ---
 
