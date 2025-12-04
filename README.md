@@ -124,6 +124,7 @@ ai-assistant/
 | **云端服务** | `SDK/xiaozhi-esp32-server` | 完整 Python 服务端参考实现 |
 | **MQTT 网关** | `SDK/xiaozhi-mqtt-gateway` | MQTT+UDP → WebSocket 协议桥接 |
 | **声纹识别** | `SDK/voiceprint-api` | 3D-Speaker 说话人识别服务 |
+| **MCP 接入点** | `SDK/mcp-endpoint-server` | MCP 工具注册中心，消息转发 |
 
 ## ⚙️ 配置说明
 

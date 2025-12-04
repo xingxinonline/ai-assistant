@@ -3,11 +3,12 @@
 ## 项目概述
 这是一个端到端的语音聊天助手/陪伴机器人项目，支持语音输入、智能对话和语音输出。
 
-基于 **小智 AI** 开源生态，本项目包含四个核心组件：
+基于 **小智 AI** 开源生态，本项目包含五个核心组件：
 - 硬件端 (ESP32): `SDK/xiaozhi-esp32`
 - 云端服务 (Python): `SDK/xiaozhi-esp32-server`
 - MQTT 网关 (Node.js): `SDK/xiaozhi-mqtt-gateway`
 - 声纹识别 (Python): `SDK/voiceprint-api`
+- MCP 接入点 (Python): `SDK/mcp-endpoint-server`
 
 ### 系统架构
 
@@ -110,7 +111,8 @@ ai-assistant/
 │   ├── xiaozhi-esp32/      # ESP32 硬件端固件 (C++)
 │   ├── xiaozhi-esp32-server/ # Python 云端服务参考实现
 │   ├── xiaozhi-mqtt-gateway/ # MQTT 网关 (Node.js)
-│   └── voiceprint-api/     # 声纹识别服务 (Python)
+│   ├── voiceprint-api/     # 声纹识别服务 (Python)
+│   └── mcp-endpoint-server/ # MCP 接入点服务 (Python)
 ├── tests/                  # 测试目录
 └── docs/                   # 文档目录
 ```
@@ -155,6 +157,27 @@ ai-assistant/
   - 模型: `iic/speech_campplus_sv_zh-cn_3dspeaker_16k` (ModelScope)
   - 特征计算: 余弦相似度
   - 音频处理: 自动重采样到 16kHz
+
+### mcp-endpoint-server (MCP 接入点服务)
+- 路径: `SDK/mcp-endpoint-server`
+- 语言: Python 3.10 + FastAPI
+- 功能: MCP 工具注册中心，转发小智端和工具端消息
+- 核心文件:
+  - `src/server.py` - FastAPI 主服务，WebSocket 端点
+  - `src/core/connection_manager.py` - 连接管理和消息转发
+  - `src/handlers/websocket_handler.py` - 工具端/小智端消息处理
+  - `src/utils/aes_utils.py` - Token 加解密
+- WebSocket 端点:
+  - `WS /mcp_endpoint/mcp/` - 工具端连接 (注册 MCP 工具)
+  - `WS /mcp_endpoint/call/` - 小智端连接 (调用 MCP 工具)
+  - `GET /mcp_endpoint/health` - 健康检查和连接统计
+- 架构设计:
+  ```
+  工具端 (MCP Server) ──WS──► MCP Endpoint ◄──WS── 小智端 (ESP32/Cloud)
+       │                        │                      │
+       │  注册工具列表            │  转发 JSON-RPC        │  调用工具
+       └──────────────────────►◄──────────────────────┘
+  ```
 
 ## 通信协议
 
