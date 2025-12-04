@@ -2,6 +2,14 @@
 
 > Claude 专用配置文件。完整指引见 `AGENTS.md`。
 
+## CRITICAL: 默认架构
+
+**网关模式 (MQTT+UDP → WebSocket)** 是默认通信架构。ESP32 是 IoT 设备。
+
+```
+ESP32 ──(MQTT控制 + UDP音频)──► 网关 ──(WebSocket)──► Python云端
+```
+
 ## CRITICAL: 开发环境
 
 **必须使用 UV** 管理 Python：

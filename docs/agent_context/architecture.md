@@ -18,9 +18,11 @@ AI Assistant 是一个端到端的语音聊天助手项目，基于 **小智 AI*
 
 ## 连接模式
 
-### 模式一：直连模式 (WebSocket)
+### 模式一：直连模式 (WebSocket) - 仅开发调试
 
 **适用场景**: 开发测试、低延迟要求、稳定网络环境
+
+> ℹ️ **注意**: 此模式仅建议用于开发调试。生产环境请使用网关模式。
 
 ```
 ┌───────────────────┐    WebSocket + Opus     ┌─────────────────────────────┐
@@ -49,9 +51,12 @@ AI Assistant 是一个端到端的语音聊天助手项目，基于 **小智 AI*
 
 ---
 
-### 模式二：网关模式 (MQTT+UDP → WebSocket)
+### 模式二：网关模式 (MQTT+UDP → WebSocket) - ✅ 默认推荐
 
-**适用场景**: IoT 设备、低功耗场景、NAT 穿透
+**适用场景**: IoT 设备、低功耗场景、NAT 穿透、生产环境
+
+> **CRITICAL**: ESP32 本质上是 IoT 设备，网关模式更符合 IoT 设备的通信范式。
+> 所有新功能开发应默认基于此模式设计。
 
 ```
 ┌───────────────────┐                     ┌───────────────────┐                     ┌─────────────────────┐
@@ -69,11 +74,18 @@ AI Assistant 是一个端到端的语音聊天助手项目，基于 **小智 AI*
 - ✅ 支持 NAT 穿透
 - ✅ 设备可低功耗休眠
 - ✅ 集中式设备管理
-- ❌ 需要额外部署网关
+- ✅ 符合 IoT 设备通信范式
+- ✅ 支持设备认证和加密
+- ⚠️ 需要额外部署网关
+
+**网关模式设计决策**:
+- MQTT 用于 JSON 控制消息 (低带宽、可靠)
+- UDP 用于音频流 (低延迟、实时性)
+- 网关负责协议转换和音频加解密
 
 ---
 
-### 模式三：全模块部署架构
+### 模式三：全模块部署架构 (基于网关模式)
 
 **适用场景**: 生产环境、完整功能需求
 
@@ -169,33 +181,38 @@ AI Assistant 是一个端到端的语音聊天助手项目，基于 **小智 AI*
 
 ## 部署建议
 
+> **CRITICAL**: 所有环境应优先采用网关模式，确保架构一致性。
+
 ### 开发环境
 
 ```bash
-# 最小化部署：直连模式
-ESP32 ←──WebSocket──→ Python Server (本地)
+# 推荐: 本地网关模式 (与生产一致)
+ESP32 ──(MQTT+UDP)──► Gateway (本地) ──(WS)──► Python Server (本地)
+
+# 备选: 直连模式 (仅快速原型验证)
+ESP32 ──(WebSocket)──► Python Server (本地)
 ```
 
 ### 测试环境
 
 ```bash
-# 添加智控台
-ESP32 ←──WebSocket──→ Python Server
-                         ↕
-                    MySQL + Redis
-                         ↕
-                    Manager API/Web
+# 网关模式 + 智控台
+ESP32 ──(MQTT+UDP)──► Gateway ──(WS)──► Python Server
+                                              ↕
+                                         MySQL + Redis
+                                              ↕
+                                         Manager API/Web
 ```
 
 ### 生产环境
 
 ```bash
-# 完整部署：所有服务
-ESP32 ←──MQTT+UDP──→ Gateway ←──WS──→ Python Server
-                                          ↕
-                    MySQL + Redis + 声纹 + MCP
-                                          ↕
-                                    Manager 全套
+# 完整部署: 网关模式 + 所有服务
+ESP32 ──(MQTT+UDP)──► Gateway ──(WS)──► Python Server
+                                              ↕
+                          MySQL + Redis + 声纹 + MCP
+                                              ↕
+                                         Manager 全套
 ```
 
 ---
