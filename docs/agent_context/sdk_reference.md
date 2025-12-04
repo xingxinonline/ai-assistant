@@ -13,6 +13,7 @@
 | **mcp-endpoint-server**  | `SDK/mcp-endpoint-server`  | Python          | MCP 工具注册中心  |
 | **mem0** 🆕             | `SDK/mem0`                 | Python          | AI 记忆管理库     |
 | **LightRAG**             | `SDK/LightRAG`             | Python          | 知识图谱 RAG     |
+| **BullMQ** 🆕            | `SDK/bullmq`               | Python/TS       | Redis 任务队列     |
 
 ---
 
@@ -306,6 +307,88 @@ result = await rag.aquery(
 )
 
 await rag.finalize_storages()
+```
+
+---
+
+## BullMQ (Redis 任务队列)
+
+### 基本信息
+- **路径**: `SDK/bullmq`
+- **语言**: Python / TypeScript
+- **用途**: 定时任务、延迟执行、任务队列、重试机制
+- **依赖**: Redis
+- **文档**: `SDK/bullmq/README.md`, https://docs.bullmq.io
+
+### 核心概念
+
+| 概念 | 说明 |
+|------|------|
+| **Queue** | 任务队列，用于添加和管理任务 |
+| **Job** | 任务实例，包含数据和状态 |
+| **Worker** | 工作进程，消费并执行任务 |
+
+### 核心 API (Python)
+
+| 方法 | 功能 | 说明 |
+|------|------|------|
+| `queue.add()` | 添加任务 | 支持延迟、重试等选项 |
+| `queue.addBulk()` | 批量添加 | 高效批量操作 |
+| `queue.pause()` | 暂停队列 | 停止处理新任务 |
+| `queue.resume()` | 恢复队列 | 继续处理任务 |
+| `job.remove()` | 删除任务 | 删除指定任务 |
+| `job.promote()` | 立即执行 | 将延迟任务移到队列前端 |
+| `job.getState()` | 获取状态 | waiting/active/completed/failed |
+
+### 任务选项 (JobOptions)
+
+| 选项 | 类型 | 说明 |
+|------|------|------|
+| `delay` | int (ms) | 延迟执行时间 |
+| `attempts` | int | 重试次数 |
+| `backoff` | dict | 重试策略 (fixed/exponential) |
+| `removeOnComplete` | bool | 完成后自动删除 |
+| `removeOnFail` | bool | 失败后自动删除 |
+| `priority` | int | 优先级 (越小越高) |
+| `repeat` | dict | 重复任务配置 (cron/every) |
+
+### 应用场景
+- ✅ **定时提醒**: 语音助手定时提醒用户
+- ✅ **IoT 定时控制**: 定时开关灯、空调等
+- ✅ **延迟任务**: “5分钟后提醒我”
+- ✅ **周期任务**: 每天早上播报天气
+- ✅ **重试机制**: 失败自动重试
+
+### 代码示例
+```python
+from bullmq import Queue, Worker, Job
+
+# 创建队列
+queue = Queue("reminders", {"connection": {"host": "localhost", "port": 6379}})
+
+# 添加延迟任务 (5分钟后执行)
+await queue.add(
+    "reminder",
+    {"user_id": "user_123", "message": "该吃药了"},
+    {"delay": 5 * 60 * 1000}  # 5分钟
+)
+
+# 添加重复任务 (每天早上8点)
+await queue.add(
+    "daily_weather",
+    {"user_id": "user_123"},
+    {"repeat": {"cron": "0 8 * * *"}}
+)
+
+# 创建 Worker 处理任务
+async def process_reminder(job: Job, token: str):
+    user_id = job.data["user_id"]
+    message = job.data["message"]
+    # 通过 MQTT 发送语音提醒到 ESP32
+    await send_voice_reminder(user_id, message)
+    return {"status": "sent"}
+
+worker = Worker("reminders", process_reminder, {"connection": {...}})
 ```
 
 ---
