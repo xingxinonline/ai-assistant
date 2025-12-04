@@ -101,6 +101,11 @@ MCP 接入点核心文件:
 - `SDK/mcp-endpoint-server/src/core/connection_manager.py` - 连接管理和消息转发
 - `SDK/mcp-endpoint-server/mcp-endpoint-server.cfg` - 配置文件
 
+智控台核心文件:
+- `SDK/xiaozhi-esp32-server/main/manager-api/` - Java Spring Boot 后端
+- `SDK/xiaozhi-esp32-server/main/manager-web/` - Vue.js Web 前端
+- `SDK/xiaozhi-esp32-server/main/manager-mobile/` - uni-app 移动端 (H5/iOS/Android/小程序)
+
 ## 通信协议速查
 
 ### 直连模式 (WebSocket)
@@ -125,6 +130,20 @@ MCP 接入点核心文件:
 - 遵循 PEP 8
 - 中文注释和文档字符串
 - 异步函数使用 `async/await`
+
+### Git 提交规范
+遵循 **Conventional Commits**，格式：`<emoji> <type>(<scope>): <subject>`
+
+| Type | Emoji | 说明 |
+|------|-------|------|
+| `feat` | ✨ | 新功能 |
+| `fix` | 🐛 | 修复 |
+| `docs` | 📝 | 文档 |
+| `refactor` | ♻️ | 重构 |
+| `test` | ✅ | 测试 |
+| `chore` | 🧹 | 杂务 |
+
+**正文三段式**: WHAT(做了什么) → WHY(为什么做) → HOW(怎么做的)
 
 ### 示例代码
 ```python

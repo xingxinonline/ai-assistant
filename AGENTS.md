@@ -33,6 +33,33 @@
                                               └─────────────────────────────┘
 ```
 
+**全模块部署架构:**
+```
+┌───────────────────────────────────────────────────────────────────────────────────┐
+│                              全模块部署架构                                     │
+├───────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                 │
+│  ┌───────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐      │
+│  │ ESP32 设备  │     │  MQTT 网关    │     │ Python Server │     │   智控台      │      │
+│  │           │ ◄─► │ :1883/:8007  │ ◄─► │    :8000     │ ◄─► │   :8002     │      │
+│  │ • 音频采集   │     │ • 协议转换    │     │ • ASR/LLM/TTS │     │ • 用户管理   │      │
+│  │ • MCP 工具  │     │ • 音频加解密  │     │ • VAD/Intent  │     │ • 模型配置   │      │
+│  └───────────┘     │ • 设备认证    │     │ • Memory      │     │ • 参数配置   │      │
+│        │           └─────────────┘     │ • Plugins     │     │ • OTA 升级   │      │
+│        │                               └──────┬──────┘     └─────────────┘      │
+│        │                                      │                                  │
+│        ▼                                      ▼                                  │
+│  ┌───────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐      │
+│  │ MCP 接入点  │     │  声纹识别     │     │   MySQL      │     │    Redis     │      │
+│  │   :8004    │     │   :8005      │     │   :3306      │     │    :6379     │      │
+│  │           │     │              │     │              │     │              │      │
+│  │ • 工具注册   │     │ • 3D-Speaker │     │ • 用户数据    │     │ • 会话缓存   │      │
+│  │ • 消息转发   │     │ • 说话人识别  │     │ • 设备绑定    │     │ • Token缓存  │      │
+│  └───────────┘     └─────────────┘     └─────────────┘     └─────────────┘      │
+│                                                                                 │
+└───────────────────────────────────────────────────────────────────────────────────┘
+```
+
 **网关模式 (MQTT+UDP → WebSocket):**
 ```
 ┌───────────────────┐                     ┌───────────────────┐                     ┌─────────────────────┐
@@ -130,7 +157,79 @@ ai-assistant/
 - 语言: Python 3.10
 - 功能: 完整的 ASR/LLM/TTS 流程实现
 - 配置: `config.yaml` - 模块配置参考
-- 核心代码: `core/` 目录
+- 核心目录:
+  - `core/providers/` - ASR/LLM/TTS/VAD/VLLM 提供者实现
+  - `core/handle/` - 连接处理和消息分发
+  - `plugins_func/` - 插件函数 (天气/新闻/音乐等)
+- 支持的模块:
+  | 模块 | 支持平台 |
+  |------|----------|
+  | **ASR** | FunASR(本地), 火山引擎, 讯飞, 阿里云, 腾讯, 百度, OpenAI |
+  | **LLM** | 智谱GLM, 阿里百炼, 电豆Doubao, DeepSeek, Gemini, Ollama, Dify, Coze |
+  | **TTS** | EdgeTTS(免费), 火山引擎, 阿里云, 腾讯, 讯飞, FishSpeech, GPT-SoVITS |
+  | **VAD** | SileroVAD(本地) |
+  | **VLLM** | 智谱glm-4v-flash, 千问qwen2.5-vl |
+  | **Memory** | mem0ai, 本地短期记忆 |
+  | **Intent** | function_call, intent_llm |
+- 全模块部署端口:
+  | 服务 | 端口 | 说明 |
+  |------|------|------|
+  | xiaozhi-server | 8000 | WebSocket 服务 |
+  | manager-api | 8002 | 智控台后端 (Java) |
+  | manager-web | 8001 | 智控台前端 (Vue) |
+  | MySQL | 3306 | 数据库 |
+  | Redis | 6379 | 缓存 |
+
+### manager-api (智控台后端)
+- 路径: `SDK/xiaozhi-esp32-server/main/manager-api`
+- 语言: Java (Spring Boot)
+- 功能: 用户管理、设备绑定、模型配置、OTA 升级
+- 核心模块:
+  - `modules/agent/` - 智能体/角色管理
+  - `modules/device/` - 设备管理
+  - `modules/model/` - 模型配置 (ASR/LLM/TTS)
+  - `modules/knowledge/` - 知识库管理
+  - `modules/timbre/` - 音色管理
+  - `modules/voiceclone/` - 语音克隆
+  - `modules/security/` - 安全认证
+  - `modules/sys/` - 系统配置
+- 国际化: 支持中/英/德/越南语
+
+### manager-web (智控台前端)
+- 路径: `SDK/xiaozhi-esp32-server/main/manager-web`
+- 语言: Vue.js
+- 功能: Web 管理界面
+- 核心页面:
+  - `DeviceManagement.vue` - 设备管理
+  - `ModelConfig.vue` - 模型配置
+  - `AgentTemplateManagement.vue` - 智能体模板
+  - `KnowledgeBaseManagement.vue` - 知识库管理
+  - `VoiceCloneManagement.vue` - 语音克隆
+  - `VoicePrint.vue` - 声纹管理
+  - `OtaManagement.vue` - OTA 升级
+  - `UserManagement.vue` - 用户管理
+
+### manager-mobile (智控台移动版)
+- 路径: `SDK/xiaozhi-esp32-server/main/manager-mobile`
+- 语言: Vue 3 + TypeScript (uni-app)
+- 功能: 跨端移动管理端 (App/H5/小程序)
+- 平台兼容性:
+  | H5 | iOS | Android | 微信小程序 |
+  |----|-----|---------|-----------|
+  | ✓  | ✓   | ✓       | ✓         |
+- 核心功能:
+  - `pages/agent/` - 智能体管理
+  - `pages/device/` - 设备管理
+  - `pages/device-config/` - 设备配网 (WiFi/超声波)
+  - `pages/voiceprint/` - 声纹管理
+  - `pages/chat-history/` - 聊天记录
+- 技术栈: alova (请求库) + pinia (状态) + wot-design-uni (UI)
+- 开发命令:
+  ```bash
+  pnpm dev:h5          # H5 开发
+  pnpm dev:mp          # 微信小程序
+  pnpm build:app       # App 构建
+  ```
 
 ### xiaozhi-mqtt-gateway (MQTT 网关)
 - 路径: `SDK/xiaozhi-mqtt-gateway`
@@ -269,6 +368,61 @@ Body: {clientIds: ["GID@@@MAC@@@UUID", ...]}
 - 所有函数需要类型注解
 - 遵循 PEP 8 风格指南
 - 使用中文编写文档字符串
+
+## Git 提交规范 (Conventional Commits)
+
+本项目遵循 **Conventional Commits** 规范，采用 **Commit-As-Prompt** 哲学，确保提交信息既适合人类阅读，也适合 AI 助手理解。
+
+### 提交格式
+
+```
+<emoji> <type>(<scope>): <subject>
+
+<WHAT>
+<WHY>
+<HOW>
+```
+
+### Type 与 Emoji 映射
+
+| Type | Emoji | 说明 |
+|------|-------|------|
+| `feat` | ✨ | 新功能 |
+| `fix` | 🐛 | 修复 Bug |
+| `docs` | 📝 | 文档变更 |
+| `style` | 🎨 | 代码格式 (不影响功能) |
+| `refactor` | ♻️ | 代码重构 |
+| `perf` | ⚡️ | 性能优化 |
+| `test` | ✅ | 测试相关 |
+| `build` | 🏗️ | 构建系统 |
+| `ci` | 🤖 | CI/CD 配置 |
+| `chore` | 🧹 | 杂务 (依赖更新等) |
+| `revert` | ⏪ | 回滚提交 |
+| `prompt` | 🧠 | AI 上下文/Prompt 相关 |
+
+### 正文结构 (WHAT/WHY/HOW)
+
+提交正文必须遵循三段式结构：
+
+- **WHAT**: 一句话描述动作与对象
+- **WHY**: 阐述业务目标、用户需求或缺陷背景（关联 Issue）
+- **HOW**: 概述实现策略、兼容性影响、验证方式
+
+### 示例
+
+```
+✨ feat(asr): 支持火山引擎语音识别
+
+WHAT: 新增 VolcEngine ASR Provider 实现
+
+WHY: 为满足高并发场景下的语音识别需求，接入火山引擎 ASR 服务。
+关联需求 #123
+
+HOW: 
+- 实现 VolcEngineASRProvider 类，继承 BaseASRProvider
+- 支持流式音频输入和实时转写
+- 已通过单元测试和集成测试验证
+```
 
 ## PR 指令
 - 标题格式: `[模块名] 简要描述`

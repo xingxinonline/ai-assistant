@@ -111,7 +111,14 @@ ai-assistant/
 ├── SDK/                    # 参考实现 (Git Submodule)
 │   ├── xiaozhi-esp32/      # ESP32 硬件端固件 (C++)
 │   ├── xiaozhi-esp32-server/ # Python 云端参考实现
-│   └── xiaozhi-mqtt-gateway/ # MQTT 网关 (Node.js)
+│   │   └── main/
+│   │       ├── xiaozhi-server/  # Python 服务端
+│   │       ├── manager-api/     # Java 智控台后端
+│   │       ├── manager-web/     # Vue 智控台前端
+│   │       └── manager-mobile/  # uni-app 移动端
+│   ├── xiaozhi-mqtt-gateway/    # MQTT 网关 (Node.js)
+│   ├── voiceprint-api/          # 声纹识别 (Python)
+│   └── mcp-endpoint-server/     # MCP 接入点 (Python)
 ├── tests/                  # 测试目录
 └── docs/                   # 文档目录
 ```
@@ -121,7 +128,10 @@ ai-assistant/
 | 组件 | 路径 | 说明 |
 |------|------|------|
 | **硬件端** | `SDK/xiaozhi-esp32` | ESP32 固件，支持 70+ 开发板 |
-| **云端服务** | `SDK/xiaozhi-esp32-server` | 完整 Python 服务端参考实现 |
+| **云端服务** | `SDK/xiaozhi-esp32-server/main/xiaozhi-server` | 完整 Python 服务端参考实现 |
+| **智控台后端** | `SDK/xiaozhi-esp32-server/main/manager-api` | Java Spring Boot 管理后端 |
+| **智控台前端** | `SDK/xiaozhi-esp32-server/main/manager-web` | Vue.js Web 管理界面 |
+| **智控台移动版** | `SDK/xiaozhi-esp32-server/main/manager-mobile` | uni-app 跨端 App (H5/iOS/Android/小程序) |
 | **MQTT 网关** | `SDK/xiaozhi-mqtt-gateway` | MQTT+UDP → WebSocket 协议桥接 |
 | **声纹识别** | `SDK/voiceprint-api` | 3D-Speaker 说话人识别服务 |
 | **MCP 接入点** | `SDK/mcp-endpoint-server` | MCP 工具注册中心，消息转发 |
