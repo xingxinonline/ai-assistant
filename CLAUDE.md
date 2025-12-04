@@ -3,7 +3,16 @@
 ## 项目简介
 端到端语音聊天助手/陪伴机器人项目，提供语音输入 → 智能对话 → 语音输出的完整交互体验。
 
-基于 **小智 AI** 开源生态，本项目实现 Python 服务端，配合 ESP32 硬件端 (`SDK/xiaozhi-esp32`) 使用。
+基于 **小智 AI** 开源生态，本项目包含三个核心组件：
+- **硬件端** (ESP32): `SDK/xiaozhi-esp32` - 音频采集/播放、唤醒词检测
+- **云端服务** (Python): `SDK/xiaozhi-esp32-server` - ASR/LLM/TTS 处理
+- **MQTT 网关** (Node.js): `SDK/xiaozhi-mqtt-gateway` - 协议桥接
+
+### 系统架构
+```
+直连模式:  ESP32 ←──WebSocket+Opus──→ Python Cloud ←→ AI服务
+网关模式:  ESP32 ←──MQTT+UDP──→ Gateway ←──WebSocket──→ Python Cloud
+```
 
 ## 开发环境
 
@@ -74,6 +83,28 @@ uv run pytest
 - `SDK/xiaozhi-esp32-server/main/xiaozhi-server/config.yaml` - 完整配置参考
 - `SDK/xiaozhi-esp32-server/main/xiaozhi-server/core/` - 核心实现代码
 - `SDK/xiaozhi-esp32-server/main/xiaozhi-server/core/providers/` - ASR/LLM/TTS 提供者
+
+MQTT 网关核心文件:
+- `SDK/xiaozhi-mqtt-gateway/app.js` - 主入口，MQTT/UDP 服务器，WebSocket 桥接
+- `SDK/xiaozhi-mqtt-gateway/mqtt-protocol.js` - MQTT 3.1.1 协议解析与封装
+- `SDK/xiaozhi-mqtt-gateway/utils/mqtt_config_v2.js` - 设备认证签名 (HMAC-SHA256)
+
+## 通信协议速查
+
+### 直连模式 (WebSocket)
+- 握手: `hello` 消息交换 (含 audio_params, session_id)
+- 音频: Opus 编码，Binary 帧传输
+- 控制: JSON 消息 (listen, stt, tts, llm, mcp, goodbye)
+
+### 网关模式 (MQTT+UDP)
+- MQTT 认证: `clientId=GID@@@MAC@@@UUID`, `password=HMAC-SHA256`
+- UDP 加密: AES-128-CTR, 每会话随机密钥
+- UDP Header: 16字节 (type, payloadLen, connId, timestamp, sequence)
+
+### MCP 协议 (设备控制)
+- 基于 JSON-RPC 2.0
+- `tools/list`: 获取设备能力
+- `tools/call`: 调用设备功能 (音量、灯光、GPIO)
 
 ## 代码规范
 
