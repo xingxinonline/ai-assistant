@@ -50,13 +50,22 @@ uv run pytest --cov=src
 | ⚠️ 谨慎 | `third_party/xiaozhi-esp32/` | ESP32 C++ 代码 |
 | ❌ 禁止 | `third_party/*/`, `.venv/`, `.env`, `uv.lock` | 子模块/敏感文件 |
 
-## API 配置
+## 模型配置
+
+### LLM
 
 | 用途 | 模型 | API Host |
 |------|------|----------|
 | 对话 | `glm-4.5-flash` | `https://open.bigmodel.cn/api/paas/v4` |
-| Embedding | `bge-m3` (1024维) | `https://ai.gitee.com/v1` |
-| Rerank | `bge-reranker-v2-m3` | `https://ai.gitee.com/v1/rerank` |
+
+### 向量化与重排序 (推荐: 混合部署)
+
+| 组件      | 模型                   | 部署     | 延迟  |
+| --------- | ---------------------- | -------- | ----- |
+| Embedding | `bge-m3` (1024维)      | 远程 API | ~80ms |
+| Reranker  | `bce-reranker-base_v1` | 本地 CPU | ~30ms |
+
+> 详细选型说明见 `docs/agent_context/architecture.md` → 模型选型
 
 ## 代码规范
 

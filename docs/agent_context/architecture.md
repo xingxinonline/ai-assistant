@@ -247,6 +247,66 @@ ESP32 ──(WebSocket + Opus)──► Python Server
 
 ---
 
+## 模型选型
+
+### LLM 对话模型
+
+| 用途     | 模型                 | API Host                               |
+| -------- | -------------------- | -------------------------------------- |
+| 一般对话 | `glm-4.5-flash`      | `https://open.bigmodel.cn/api/paas/v4` |
+| 摘要总结 | `glm-4-flash-250414` | 同上                                   |
+
+### 向量化与重排序
+
+语音助手场景对延迟敏感，推荐 **混合部署** 策略。
+
+#### 三种部署方案对比
+
+| 方案       | Embedding                | Reranker                    | 总延迟 | 推荐场景      |
+| ---------- | ------------------------ | --------------------------- | ------ | ------------- |
+| **全远程** | bge-m3 (远程)            | bge-reranker-v2-m3 (远程)   | ~230ms | 原型开发      |
+| **混合** ⭐ | bge-m3 (远程)            | bce-reranker-base_v1 (本地) | ~110ms | **生产推荐**  |
+| **全本地** | bge-small-zh-v1.5 (本地) | bce-reranker-base_v1 (本地) | ~80ms  | 离线/极致延迟 |
+
+#### 推荐配置 (混合部署)
+
+```python
+# Embedding - 远程 API (质量优先)
+EMBEDDING_MODEL = "bge-m3"           # 1024维, 8K上下文
+EMBEDDING_API = "https://ai.gitee.com/v1"
+EMBEDDING_LATENCY = "~80ms"
+
+# Reranker - 本地部署 (延迟优先)
+RERANKER_MODEL = "maidalun1020/bce-reranker-base_v1"  # ~300MB
+RERANKER_LOCAL = True
+RERANKER_LATENCY = "~30ms (CPU)"
+```
+
+#### 选型理由
+
+| 组件                 | 为什么这样选？                                          |
+| -------------------- | ------------------------------------------------------- |
+| **Embedding 用远程** | 本地 CPU 跑 Embedding 太慢 (~200ms)，远程 80ms 反而更快 |
+| **Reranker 用本地**  | 排序计算密集，远程 ~150ms，本地 ~30ms，节省 120ms       |
+
+#### 备选模型
+
+**Embedding:**
+| 模型                 | 维度 | 上下文 | 部署         | 适用场景       |
+| -------------------- | ---- | ------ | ------------ | -------------- |
+| bge-m3               | 1024 | 8K     | 远程         | 通用，质量最高 |
+| bge-small-zh-v1.5    | 512  | 0.5K   | 本地         | 中文，极速     |
+| Qwen3-Embedding-0.6B | 1024 | 32K    | 本地 (需GPU) | 长上下文       |
+
+**Reranker:**
+| 模型                 | 上下文 | 大小   | CPU延迟     | 适用场景     |
+| -------------------- | ------ | ------ | ----------- | ------------ |
+| bce-reranker-base_v1 | 0.5K   | ~300MB | ~30ms       | **CPU 首选** |
+| bge-reranker-v2-m3   | 8K     | -      | 远程 ~150ms | 质量最高     |
+| Qwen3-Reranker-0.6B  | 8K     | ~1.2GB | ~100ms      | GPU 场景     |
+
+---
+
 ## 存储设计
 
 | 存储 | 用途 |
