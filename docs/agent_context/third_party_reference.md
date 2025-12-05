@@ -7,6 +7,7 @@
 | 组件 | 类型 | 用途 | 路径 |
 |------|------|------|------|
 | xiaozhi-esp32 | 硬件端 | ESP32 固件 | `third_party/xiaozhi-esp32/` |
+| py-xiaozhi | 测试客户端 | Python 模拟客户端 (无硬件测试) | `third_party/py-xiaozhi/` |
 | xiaozhi-esp32-server | 云端参考 | Python 后端参考实现 | `third_party/xiaozhi-esp32-server/` |
 | xiaozhi-mqtt-gateway | 网关 | MQTT+UDP 网关 | `third_party/xiaozhi-mqtt-gateway/` |
 | voiceprint-api | 声纹服务 | 说话人识别 | `third_party/voiceprint-api/` |
@@ -51,6 +52,44 @@ void OnIoTCommand(const cJSON* command);
 
 - 协议文档: `third_party/xiaozhi-esp32/docs/websocket_protocol_*.md`
 - 开发指南: `third_party/xiaozhi-esp32/docs/development-guide.md`
+
+---
+
+## py-xiaozhi (Python 测试客户端)
+
+> Python 实现的小智客户端，模拟 ESP32 设备行为，用于无硬件环境测试。
+
+### 用途
+
+- **无硬件测试**: 在没有 ESP32 开发板的情况下测试云端服务
+- **协议调试**: 调试 WebSocket/MQTT 协议通信
+- **功能验证**: 验证 ASR/LLM/TTS 流程完整性
+
+### 快速启动
+
+```bash
+cd third_party/py-xiaozhi
+uv pip install -r requirements.txt
+uv run python main.py
+```
+
+### 核心文件
+
+```
+py-xiaozhi/
+├── main.py              # 入口文件
+├── config.py            # 配置管理
+├── audio_processor.py   # 音频处理
+└── protocol_handler.py  # 协议处理
+```
+
+### 与 ESP32 的对应关系
+
+| ESP32 (C++) | py-xiaozhi (Python) | 说明 |
+|-------------|---------------------|------|
+| `Application::Start()` | `main.py` | 程序入口 |
+| `Audio::OnInput()` | `audio_processor.py` | 音频采集 |
+| `Protocol::Connect()` | `protocol_handler.py` | WebSocket 连接 |
 
 ---
 
@@ -418,3 +457,4 @@ class SchedulerMCPService:
 | LightRAG | `third_party/LightRAG/README.md` |
 | BullMQ | [官方文档](https://docs.bullmq.io/) |
 | xiaozhi-esp32 | `third_party/xiaozhi-esp32/docs/` |
+| py-xiaozhi | `third_party/py-xiaozhi/README.md` |

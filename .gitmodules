@@ -22,3 +22,6 @@
 [submodule "third_party/bullmq"]
 	path = third_party/bullmq
 	url = https://github.com/taskforcesh/bullmq.git
+[submodule "third_party/py-xiaozhi"]
+	path = third_party/py-xiaozhi
+	url = https://github.com/huangjunsen0406/py-xiaozhi.git

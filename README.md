@@ -117,6 +117,7 @@ ai-assistant/
 | 组件 | 说明 |
 |------|------|
 | `xiaozhi-esp32` | ESP32 固件，支持 70+ 开发板 |
+| `py-xiaozhi` | Python 客户端，无硬件测试 |
 | `xiaozhi-esp32-server` | Python 云端参考实现 |
 | `xiaozhi-mqtt-gateway` | MQTT+UDP → WebSocket 协议桥接 |
 | `voiceprint-api` | 3D-Speaker 声纹识别 |
